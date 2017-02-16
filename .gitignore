@@ -1,0 +1,5 @@
+# Dependency directory
+node_modules
+
+# Bot configuration
+config.json
