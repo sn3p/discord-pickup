@@ -23,45 +23,57 @@ var Bot = function () {
     _classCallCheck(this, Bot);
 
     this.token = options.token;
-    this.discord = new _discord2.default.Client();
+    this.client = new _discord2.default.Client();
   }
 
   _createClass(Bot, [{
     key: 'connect',
     value: function connect() {
       _winston2.default.debug('Connecting to Discord');
-      this.discord.login(this.token);
+      this.client.login(this.token);
       this.attachListeners();
     }
   }, {
     key: 'attachListeners',
     value: function attachListeners() {
-      var _this = this;
-
-      this.discord.on('ready', function () {
+      this.client.on('ready', function () {
         _winston2.default.info('Connected to Discord');
       });
 
-      this.discord.on('message', function (message) {
-        var author = message.author;
+      // TODO: this doesn't trigger when a message is edited
+      this.client.on('message', function (message) {});
 
-        // Ignore messages sent by the bot itself
-        if (author.id === _this.discord.user.id) {
-          return;
-        }
-
-        if (message.content === 'ping') {
-          message.reply('ping');
-        }
-      });
-
-      this.discord.on('error', function (error) {
+      this.client.on('error', function (error) {
         _winston2.default.error('Received error event from Discord', error);
       });
 
-      this.discord.on('warn', function (warning) {
+      this.client.on('warn', function (warning) {
         _winston2.default.warn('Received warn event from Discord', warning);
       });
+    }
+  }, {
+    key: 'parseMessage',
+    value: function parseMessage() {
+      var author = message.author;
+
+      // Ignore messages sent by the bot itself
+      if (author.id === this.client.user.id) {
+        return;
+      }
+
+      // Parse command and arguments
+      if (message.content.startsWith('.')) {
+        var content = message.content.toLowerCase();
+        var args = content.trim().split(/\s+/);
+        var command = args.shift().substr(1);
+
+        if (!command.length) {
+          return;
+        }
+
+        // message.reply('pong');
+        message.channel.sendMessage(['```', 'The command was \'' + command + '\' with the arugments: ' + args.join(', '), '```'].join(''));
+      }
     }
   }]);
 
