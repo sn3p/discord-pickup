@@ -5,9 +5,9 @@ var _fs = require('fs');
 
 var _fs2 = _interopRequireDefault(_fs);
 
-var _bot = require('./bot');
+var _Bot = require('./Bot');
 
-var _bot2 = _interopRequireDefault(_bot);
+var _Bot2 = _interopRequireDefault(_Bot);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -24,6 +24,9 @@ function readJSONConfig(filePath) {
   }
 }
 
+// Load the configuration file
 var config = readJSONConfig(__dirname + '/../config.json');
-var bot = new _bot2.default(config);
+
+// Initialize and connect the bot
+var bot = new _Bot2.default(config);
 bot.connect();

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import fs from 'fs';
-import Bot from './bot';
+import Bot from './Bot';
 
 function readJSONConfig (filePath) {
   const configFile = fs.readFileSync(filePath, { encoding: 'utf8' });
@@ -16,6 +16,9 @@ function readJSONConfig (filePath) {
   }
 }
 
+// Load the configuration file
 const config = readJSONConfig(__dirname + '/../config.json');
+
+// Initialize and connect the bot
 const bot = new Bot(config);
 bot.connect();

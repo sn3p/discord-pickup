@@ -1,5 +1,11 @@
-# Dependency directory
-node_modules
+# Build
+dist/
 
-# Bot configuration
+# Config
 config.json
+
+# Logs
+*.log
+
+# Dependencies
+node_modules
