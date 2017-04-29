@@ -5,7 +5,7 @@ class IDM extends Game {
     return 'iDM';
   }
 
-  get spots() {
+  get playersRequired() {
     return 1;
   }
 }

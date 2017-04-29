@@ -30,7 +30,7 @@ var Bot = function () {
 
     this.token = options.token;
     this.prefix = options.prefix;
-    this.client = new _discord2.default.Client();
+    this.discord = new _discord2.default.Client();
 
     // Initialize game types
     this.games = {};
@@ -63,25 +63,25 @@ var Bot = function () {
   _createClass(Bot, [{
     key: 'connect',
     value: function connect() {
-      _winston2.default.debug('Connecting to Discord');
-      this.client.login(this.token);
+      _winston2.default.info('Connecting to Discord');
+      this.discord.login(this.token);
       this.attachListeners();
     }
   }, {
     key: 'attachListeners',
     value: function attachListeners() {
-      this.client.on('ready', function () {
+      this.discord.on('ready', function () {
         _winston2.default.info('Connected to Discord');
       });
 
       // TODO: this doesn't trigger when a message is edited
-      this.client.on('message', this.parseMessage.bind(this));
+      this.discord.on('message', this.parseMessage.bind(this));
 
-      this.client.on('error', function (error) {
+      this.discord.on('error', function (error) {
         _winston2.default.error('Received error event from Discord', error);
       });
 
-      this.client.on('warn', function (warning) {
+      this.discord.on('warn', function (warning) {
         _winston2.default.warn('Received warn event from Discord', warning);
       });
     }
@@ -89,7 +89,7 @@ var Bot = function () {
     key: 'parseMessage',
     value: function parseMessage(message) {
       // Ignore messages sent by the bot itself
-      if (message.author.id === this.client.user.id) {
+      if (message.author.id === this.discord.user.id) {
         return;
       }
 
@@ -119,6 +119,14 @@ var Bot = function () {
       });
       return games;
     }
+  }, {
+    key: 'startPicking',
+    value: function startPicking(args) {}
+
+    /**
+     * Command
+     */
+
   }, {
     key: 'command',
     value: function command(_command, args, message) {
@@ -156,6 +164,11 @@ var Bot = function () {
           }
       }
     }
+
+    /**
+     * Join command
+     */
+
   }, {
     key: 'join',
     value: function join(args, message) {
@@ -163,15 +176,22 @@ var Bot = function () {
 
       // Check for games types in arguments
       var games = this.getGamesFromArgs(args);
+      if (!games.length) {
+        message.channel.sendMessage('Could not find a pug by this name.');
+        return false;
+      }
+
       var joined = [];
 
       games.every(function (type) {
         var game = _this2.games[type];
         var player = game.addPlayer(message.author);
 
+        // console.log(player)
+
         // The player was not added
         if (!player) {
-          message.channel.sendMessage(message.author.username + ' was not added :(');
+          message.channel.sendMessage(message.author.username + ' could not be added :(');
           return;
         }
 
@@ -179,6 +199,7 @@ var Bot = function () {
 
         // Did the pug fill?
         if (game.isFull) {
+          // this.startPicking();
           return false;
         }
       });
@@ -187,9 +208,19 @@ var Bot = function () {
         message.channel.sendMessage(message.author.username + ' joined **' + joined.join(' ') + '**');
       }
     }
+
+    /**
+     * Leave command
+     */
+
   }, {
     key: 'leave',
     value: function leave(args, message) {}
+
+    /**
+     * List command
+     */
+
   }, {
     key: 'list',
     value: function list(args, message) {
@@ -231,10 +262,11 @@ var Bot = function () {
         ;
 
         reply = replyParts.join(' :: ');
+
+        // List the requested games
       } else {
         var _games = this.getGamesFromArgs(args);
 
-        // List the requested games
         if (_games.length) {
           var _replyParts = [];
 
@@ -256,7 +288,7 @@ var Bot = function () {
         }
       }
 
-      message.channel.sendMessage('`' + reply + '`');
+      message.channel.sendMessage(reply);
     }
   }, {
     key: 'promote',

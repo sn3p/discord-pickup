@@ -6,7 +6,7 @@ class Bot {
   constructor(options) {
     this.token = options.token;
     this.prefix = options.prefix;
-    this.client = new discord.Client();
+    this.discord = new discord.Client();
 
     // Initialize game types
     this.games = {}
@@ -16,31 +16,31 @@ class Bot {
   }
 
   connect() {
-    logger.debug('Connecting to Discord');
-    this.client.login(this.token);
+    logger.info('Connecting to Discord');
+    this.discord.login(this.token);
     this.attachListeners();
   }
 
   attachListeners() {
-    this.client.on('ready', () => {
+    this.discord.on('ready', () => {
       logger.info('Connected to Discord');
     });
 
     // TODO: this doesn't trigger when a message is edited
-    this.client.on('message', this.parseMessage.bind(this));
+    this.discord.on('message', this.parseMessage.bind(this));
 
-    this.client.on('error', error => {
+    this.discord.on('error', error => {
       logger.error('Received error event from Discord', error);
     });
 
-    this.client.on('warn', warning => {
+    this.discord.on('warn', warning => {
       logger.warn('Received warn event from Discord', warning);
     });
   }
 
   parseMessage(message) {
     // Ignore messages sent by the bot itself
-    if (message.author.id === this.client.user.id) {
+    if (message.author.id === this.discord.user.id) {
       return;
     }
 
@@ -68,6 +68,12 @@ class Bot {
     return games;
   }
 
+  startPicking(args) {
+  }
+
+  /**
+   * Command
+   */
   command(command, args, message) {
     switch (command) {
       // Join
@@ -100,19 +106,29 @@ class Bot {
     }
   }
 
+  /**
+   * Join command
+   */
   join(args, message) {
     // Check for games types in arguments
     const games = this.getGamesFromArgs(args);
+    if (!games.length) {
+      message.channel.sendMessage('Could not find a pug by this name.');
+      return false;
+    }
+
     const joined = [];
 
     games.every(type => {
       const game = this.games[type];
       const player = game.addPlayer(message.author);
 
+      // console.log(player)
+
       // The player was not added
       if (!player) {
         message.channel.sendMessage(
-          `${message.author.username} was not added :(`
+          `${message.author.username} could not be added :(`
         );
         return;
       }
@@ -121,6 +137,7 @@ class Bot {
 
       // Did the pug fill?
       if (game.isFull) {
+        // this.startPicking();
         return false;
       }
     });
@@ -132,9 +149,15 @@ class Bot {
     }
   }
 
+  /**
+   * Leave command
+   */
   leave(args, message) {
   }
 
+  /**
+   * List command
+   */
   list(args, message) {
     let reply;
 
@@ -150,10 +173,10 @@ class Bot {
 
       reply = replyParts.join(' :: ');
 
+    // List the requested games
     } else {
       const games = this.getGamesFromArgs(args);
 
-      // List the requested games
       if (games.length) {
         const replyParts = [];
 
@@ -176,12 +199,12 @@ class Bot {
       }
     }
 
-    message.channel.sendMessage(`\`${reply}\``);
+    message.channel.sendMessage(reply);
   }
 
   promote(args, message) {
     message.channel.sendMessage(
-      // `@here ...`
+      // `@here x player(s) needed for iCTF`
     );
   }
 }

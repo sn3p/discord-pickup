@@ -12,42 +12,44 @@ class Game {
   }
 
   get isFull() {
-    this._players.count === this.playersRequired;
+    console.log('isFull()', this._players.length, this.playersRequired)
+    return this._players.length === this.playersRequired;
   }
 
   get players() {
     return this._players;
   }
 
+  /**
+   * Add a player to this game
+   */
   addPlayer(user) {
-    // Check if the pug is full
+    // Ignore if the game is already filled
     if (this.isFull) {
+      console.log('PUG is already filled')
       return;
     }
 
-    // Is player is already added?
-    let player = this.findPlayer(user);
-    if (player) {
+    // Ignore if the player is already added
+    if (this.findPlayer(user)) {
+      console.log('Player is already added')
       return;
     }
 
-    // Create new player entry
-    // TODO: Create a player/entry Class
-    player = {
+    // Add the player
+    const player = {
       id: user.id,
       name: user.username,
       timestamp: +new Date(),
     }
     this._players.push(player);
 
-    // Check if the pug is filled
-    // if (this.isFull) {
-    //   return;
-    // }
-
     return player;
   }
 
+  /**
+   * Find a player in this game
+   */
   findPlayer(user) {
     return this._players.find(p => p.id === user.id);
   }

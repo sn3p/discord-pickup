@@ -5,7 +5,7 @@ class ICTF extends Game {
     return 'iCTF';
   }
 
-  get spots() {
+  get playersRequired() {
     return 1;
   }
 }

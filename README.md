@@ -3,6 +3,20 @@
 Pickup Game Bot for [Discord](https://discordapp.com).
 This is very WIP and far from finished, so use at your own risk.
 
+## Installation
+
+Node.js v6.x or newer is required.
+
+Install dependencies using `npm install`.
+
+```bash
+npm install
+npm run build
+npm run start
+```
+
+Or `npm run serve` to start the bot while monitoring for changes (handy while developing).
+
 ## Configuration
 
 Create a config.json that looks like this:
@@ -16,13 +30,14 @@ Create a config.json that looks like this:
 
 ## TODO
 
-A list among many other thing to do:
+All the things and more:
 
-- discord.on('message') is not triggered after editing the message
-- Store games for later reference (`.last`, `.lastt`, `.lasttt`)
-- Store player stats (`.stats @playername`)
-- Remove users when they disconnect
-- Auto remove users after a while (timeout)
+- discord.on('message') is not triggered after editing the message.
+- Store games for later reference (`.last`, `.lastt`, `.lasttt`).
+- Store player stats (`.stats @playername`).
+- Remove players when they disconnect.
+- Remove player from other pugs when a pug starts.
+- Auto remove users after a while (timeout).
 
 #### Commands
 
